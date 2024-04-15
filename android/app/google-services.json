@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "141876435844",
+    "project_id": "bao-cao-18abc",
+    "storage_bucket": "bao-cao-18abc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:141876435844:android:7cfaa0410f71a1a9e0dbd1",
+        "android_client_info": {
+          "package_name": "com.bao_cao_nhom_5"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC57Zzt7gMfE37pSkwd0IGzXI1BNAQrjB8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
