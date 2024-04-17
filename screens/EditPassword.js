@@ -17,40 +17,40 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState('');
+  
   const [password, setPassword] = useState('');
+  const [ComfirmPassword, setComfirmPassword] = useState('');
   const navigation = useNavigation();
 
-  const handleforget = () =>{
-    navigation.navigate('ForgetPassword');
-  }
-
-  const handleLogin = () => {
+  
+  const handleEdit = () => {
     const user = {
-      email: email,
       password: password,
+      ComfirmPassword: ComfirmPassword,
     };
-    axios.post('http://192.168.1.4:8000/login', user).then(Response => {
-      console.log(Response);
-      const token = Response.data.token;
-      AsyncStorage.setItem('authToken', token);
-      navigation.replace('Main');
-      console.log("Tai")
-    });
+    axios
+      .post('http://192.168.1.4:8000/changepassword', user)
+      .then(response => {
+        console.log("TTT")
+        console.log(response.data.message); // Output success message from server
+      })
+      .catch(error => {
+        console.error('There was a problem with your Axios request:', error);
+      });
   };
   return (
     <SafeAreaView
       style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>
       <View style={{alignItems: 'center', justifyContent: 'center'}}>
-        <Image
-          style={{width: 300, height: 150, marginTop: 50}}
-          source={{
-            uri: 'https://res.klook.com/image/upload/q_85/c_fill,w_750/v1692178730/nzwespti6zcfe6h3ljwy.jpg',
-          }}
-        />
+        {/* <Image
+            style={{width: 300, height: 150, marginTop: 20}}
+            source={{
+              uri: 'https://res.klook.com/image/upload/q_85/c_fill,w_750/v1692178730/nzwespti6zcfe6h3ljwy.jpg',
+            }}
+          /> */}
         <Text
           style={{
-            marginTop: 10,
+            marginTop: 50,
             fontWeight: '900',
             fontSize: 40,
             color: 'black',
@@ -68,42 +68,13 @@ const LoginScreen = () => {
             marginTop: 30,
             color: '#041E42',
           }}>
-          Đăng nhập với tài khoản của bạn
+          Đổi mật khẩu của bạn
         </Text>
       </View>
       <KeyboardAvoidingView>
-        <View style={{marginTop: 10}}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              gap: 5,
-              backgroundColor: '#D0D0D0',
-              paddingVertical: 5,
-              borderRadius: 5,
-              marginTop: 30,
-            }}>
-            <MaterialCommunityIcons
-              style={{marginLeft: 8}}
-              name="email"
-              size={24}
-              color="gray"
-            />
-            <TextInput
-              value={email}
-              onChangeText={text => setEmail(text)}
-              style={{
-                color: 'gray',
-                marginVertical: 10,
-                width: 300,
-                fontSize: email ? 16 : 16,
-              }}
-              placeholder="Nhập email"
-            />
-          </View>
-        </View>
+        
 
-        <View style={{marginTop: 10}}>
+        <View style={{marginTop: 0}}>
           <View
             style={{
               flexDirection: 'row',
@@ -130,27 +101,41 @@ const LoginScreen = () => {
                 width: 300,
                 fontSize: password ? 16 : 16,
               }}
-              placeholder="Nhập mật khẩu"
+              placeholder="Nhập mật khẩu mới"
             />
           </View>
         </View>
-
-        <View
-          style={{
-            marginTop: 12,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-          <Text>Lưu thông tin</Text>
-          <Pressable
-          onPress={() => navigation.navigate('ForgetPassword')}
-          >
-          <Text style={{color: '#007FFF', fontWeight: '500'}}>
-              Quên mật khẩu
-            </Text>
-        </Pressable>
+        <View style={{marginTop: 10}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 5,
+              backgroundColor: '#D0D0D0',
+              paddingVertical: 5,
+              borderRadius: 5,
+              marginTop: 30,
+            }}>
+            <AntDesign
+              style={{marginLeft: 8}}
+              name="lock"
+              size={24}
+              color="gray"
+            />
+            <TextInput
+              
+              onChangeText={text => setComfirmPassword(text)}
+              secureTextEntry={true}
+              style={{
+                color: 'gray',
+                marginVertical: 10,
+                width: 300,
+                fontSize: ComfirmPassword ? 16 : 16,
+              }}
+              placeholder="Nhập lại mật khẩu mới"
+            />
           </View>
+        </View>
 
         <View style={{marginTop: 50}} />
 
@@ -163,7 +148,7 @@ const LoginScreen = () => {
             marginRight: 'auto',
             padding: 15,
           }}
-          onPress={handleLogin}>
+          onPress={handleEdit}>
           <Text
             style={{
               textAlign: 'center',
@@ -171,16 +156,7 @@ const LoginScreen = () => {
               fontSize: 15,
               fontWeight: 'bold',
             }}>
-            Đăng nhập
-          </Text>
-        </Pressable>
-
-        <Pressable
-          onPress={() => navigation.navigate('Register')}
-          style={{marginTop: 15}}>
-          <Text style={{textAlign: 'center', color: 'gray', fontSize: 16}}>
-            {' '}
-            Bạn chưa có tài khoản? Đăng Ký
+            Đổi mật khẩu
           </Text>
         </Pressable>
       </KeyboardAvoidingView>

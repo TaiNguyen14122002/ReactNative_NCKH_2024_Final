@@ -29,6 +29,9 @@ import Ticket from 'react-native-vector-icons/FontAwesome'
 import Ticket_outline from 'react-native-vector-icons/Ionicons'
 import Select_ticket from '../screens/Select_ticket'
 import AddTicket from '../screens/AddTicket'
+import ForgetPassword from '../screens/ForgetPassword';
+import EditPassword from '../screens/EditPassword'
+
 const StackNavigator = () => {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
@@ -120,6 +123,17 @@ const StackNavigator = () => {
         <Stack.Screen
           name="News_Details"
           component={ProductinfoScreen}
+          options={{headerShown: true}}
+        />
+        <Stack.Screen
+          name="ForgetPassword"
+          component={ForgetPassword}
+          options={{headerShown: true}}
+        />
+        
+        <Stack.Screen
+          name="EditPassword"
+          component={EditPassword}
           options={{headerShown: true}}
         />
         <Stack.Screen

@@ -15,6 +15,7 @@ import {useDispatch} from 'react-redux';
 import {addToCart} from '../redux/CartReducer';
 import Ticket from '../api/models/Ticket';
 import moment from 'moment';
+import QRCode from 'react-native-qrcode-svg'; // Import thư viện để tạo mã QR
 
 const YourOrder = () => {
   const {userId, setUserId} = useContext(UserType);
@@ -153,9 +154,15 @@ const YourOrder = () => {
                     style={{width: 100, height: 100, resizeMode: 'contain'}}
                   />
                   <View>
+                  <View>
+                      <Text style={{width: 100, fontWeight: 'bold'}}>
+                        Mã vé:
+                      </Text>
+                      {/* <QRCode value={order._id} size={100} /> Sử dụng ID đặt hàng làm giá trị của mã QR */}
+                    </View>
                     <View>
                       <Text style={{width: 100, fontWeight: 'bold'}}>
-                        Tên sản phẩm:
+                        Loại vé:
                       </Text>
                       <Text
                         style={{width: 230}}
@@ -203,7 +210,7 @@ const YourOrder = () => {
                         numberOfLines={1}
                         ellipsizeMode="tail">
                           {moment(order.createdAt).format('DD-MM-YYYY')}
-                        {/* {order.createdAt} */}
+                        
                       </Text>
                     </View>
                     <Pressable

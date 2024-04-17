@@ -41,6 +41,92 @@ const Order = require("./models/order");
 const Product = require("./models/Product")
 const Ticket = require("./models/Ticket");
 const Admin = require("./models/admin");
+const bcrypt = require('bcryptjs');
+
+
+let loggedInUserEmail = "";
+
+
+app.post('/changepassword', async (req, res) => {
+  const {password, confirmPassword } = req.body;
+
+  try {
+    // Kiểm tra xác nhận mật khẩu
+    if (password !== confirmPassword) {
+      return res.status(400).json({ error: 'Mật khẩu xác nhận không khớp' });
+    }
+
+    // Tìm người dùng theo email
+    const user = await User.findOne({ loggedInUserEmail });
+    console.log(loggedInUserEmail)
+
+    if (!user) {
+      return res.status(404).json({ error: 'Người dùng không tồn tại' });
+    }
+
+    // Hash mật khẩu mới
+    //const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Cập nhật mật khẩu mới cho người dùng
+    user.password = password;
+    await user.save();
+
+    return res.status(200).json({ message: 'Đổi mật khẩu thành công' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Đã xảy ra lỗi khi đổi mật khẩu' });
+  }
+});
+
+
+
+
+
+
+
+// Route to handle forgot password request
+app.post('/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const newPassword = Math.random().toString(36).slice(-8);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = newPassword;
+    await user.save();
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: 'Tainguyenlq.0123@gmail.com',
+        pass: 'fucc zyds hruu qvta',
+      },
+    });
+
+    const mailOptions = {
+      from: 'Tainguyenlq.0123@gmail.com',
+      to: email,
+      subject: 'Password Reset',
+      text: `Your new password is: ${newPassword}`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).json({ error: 'Failed to send email' });
+      } else {
+        console.log('Email sent: ' + info.response);
+        return res.status(200).json({ message: 'New password sent to your email' });
+      }
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 
 
@@ -180,12 +266,14 @@ const generateSecretKey = () => {
 const secretKey = generateSecretKey();
 
 //endpoint to login the user!
+
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
     //check if the user exists
     const user = await User.findOne({ email });
+    loggedInUserEmail = email;
     if (!user) {
       return res.status(401).json({ message: "Tên người dùng không tồn tại" });
     }
@@ -194,7 +282,7 @@ app.post("/login", async (req, res) => {
     if (user.password !== password) {
       return res.status(401).json({ message: "Mật khẩu không đúng" });
     }
-
+    
     //generate a token
     const token = jwt.sign({ userId: user._id }, secretKey);
 
@@ -248,7 +336,7 @@ app.get("/addresses/:userId", async (req, res) => {
 //endpoint to store all the orders
 app.post("/orders", async (req, res) => {
   try {
-    const { userId, cartItems, totalPrice, shippingAddress, paymentMethod } =
+    const { OrderID, userId, cartItems, totalPrice, shippingAddress, paymentMethod } =
       req.body;
 
     const user = await User.findById(userId);

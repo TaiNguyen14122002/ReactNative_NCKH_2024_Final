@@ -12,6 +12,7 @@ import { equestBillingAgreement } from 'react-native-paypal';
 import { requestOneTimePayment } from 'react-native-paypal';
 import DocCircCleO from 'react-native-vector-icons/FontAwesome'
 
+
 const ConfirmationScreen = () => {
   const steps = [
     {title: 'Địa chỉ', content: 'Address Form'},
@@ -23,6 +24,7 @@ const ConfirmationScreen = () => {
   const [addresses, setAddresses] = useState([]);
   const {userId, setUserId} = useContext(UserType);
   const cart = useSelector((state) => state.cart.cart);
+  
   
   const total = cart
       ?.map((item) => item.Price * item.quantity)
@@ -55,6 +57,7 @@ const ConfirmationScreen = () => {
   const handlePlaceOrder = async () => {
     try {
       const orderData = {
+        
         userId: userId,
         totalPrice: amountInCent*10,
         shippingAddress: selectedAddress,

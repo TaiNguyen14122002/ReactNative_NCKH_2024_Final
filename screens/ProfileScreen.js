@@ -37,6 +37,10 @@ const handleLogout = async () => {
   }
 };
 
+const handleEdit = () =>{
+  navigation.navigate('EditPassword');
+}
+
   const HandleYourOrder = () => {
     navigation.navigate('YourOrder');
   };
@@ -292,7 +296,7 @@ const handleLogout = async () => {
           marginTop: 30,
         }}>
         <Pressable
-          onPress={HandleYourOrder}
+          onPress={handleEdit}
           style={{
             padding: 10,
             backgroundColor: '#E0E0E0',
