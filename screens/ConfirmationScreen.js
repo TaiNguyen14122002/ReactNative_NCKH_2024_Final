@@ -1,4 +1,11 @@
-import {StyleSheet, Text, View, ScrollView, Pressable} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Pressable,
+  TextInput,
+} from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {UserType} from '../UserContext';
 import {useDispatch, useSelector} from 'react-redux';
@@ -7,31 +14,34 @@ import axios from 'axios';
 import {cleanCart} from '../redux/CartReducer';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {Alert} from 'react-native';
-import RazorpayCheckout from 'react-native-razorpay'
-import { equestBillingAgreement } from 'react-native-paypal';
-import { requestOneTimePayment } from 'react-native-paypal';
-import DocCircCleO from 'react-native-vector-icons/FontAwesome'
-
+import RazorpayCheckout from 'react-native-razorpay';
+import {equestBillingAgreement} from 'react-native-paypal';
+import {requestOneTimePayment} from 'react-native-paypal';
+import DocCircCleO from 'react-native-vector-icons/FontAwesome';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const ConfirmationScreen = () => {
   const steps = [
-    {title: 'Địa chỉ', content: 'Address Form'},
-    {title: 'Vận chuyển', content: 'Delivery Options'},
-    {title: 'Phương thức thanh toán', content: 'Payment Details'},
+    {title: 'Nhập Mail', content: 'Mail'},
+    {title: 'Chọn thời gian', content: 'DataTime'},
+    {title: 'Thanh toán', content: 'Payment'},
   ];
   const navigation = useNavigation();
   const [currentStep, setCurrentStep] = useState(0);
   const [addresses, setAddresses] = useState([]);
+  const [email, setEmail] = useState('');
   const {userId, setUserId} = useContext(UserType);
-  const cart = useSelector((state) => state.cart.cart);
-  
-  
-  const total = cart
-      ?.map((item) => item.Price * item.quantity)
-      .reduce((curr, prev) => curr + prev, 0);
-    const formattedTotal = total?.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }); // Đổi 'VND' nếu đơn vị tiền tệ khác
+  const cart = useSelector(state => state.cart.cart);
 
-    const amountInCent = parseInt(parseFloat(formattedTotal) * 100);
+  const total = cart
+    ?.map(item => item.Price * item.quantity)
+    .reduce((curr, prev) => curr + prev, 0);
+  const formattedTotal = total?.toLocaleString('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }); // Đổi 'VND' nếu đơn vị tiền tệ khác
+
+  const amountInCent = parseInt(parseFloat(formattedTotal) * 100);
 
   useEffect(() => {
     fetchAddresses();
@@ -60,29 +70,28 @@ const ConfirmationScreen = () => {
   //     console.log('error', error);
   //   }
   // };
-  
+
   const dispatch = useDispatch();
   const [selectedAddress, setSelectedAdress] = useState('');
   const [option, setOption] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
-  console.log(cart)
+  console.log(cart);
   const handlePlaceOrder = async () => {
     try {
       const orderData = {
-        
         userId: userId,
-        totalPrice: amountInCent*10,
+        totalPrice: amountInCent * 10,
         // shippingAddress: selectedAddress,
         Mail: selectedAddress,
         paymentMethod: selectedOption,
         cartItems: cart,
       };
-      console.log("orderData:", orderData);
+      console.log('orderData:', orderData);
 
       const response = await axios.post(
         'http://192.168.1.4:8000/orders',
         orderData,
-      )
+      );
       if (response.status === 200) {
         navigation.navigate('Order');
         dispatch(cleanCart());
@@ -90,7 +99,6 @@ const ConfirmationScreen = () => {
       } else {
         console.log('error creating order', response.data);
       }
-      
     } catch (error) {
       console.log('error', error);
     }
@@ -99,17 +107,17 @@ const ConfirmationScreen = () => {
   const pay = async () => {
     try {
       const options = {
-        description: "Adding To Wallet",
-        currency: "USD",
-        name: "Museum_HCM",
-        key: "rzp_test_E3GWYimxN7YMk8",
-        amount: amountInCent/25,
+        description: 'Adding To Wallet',
+        currency: 'USD',
+        name: 'Museum_HCM',
+        key: 'rzp_test_E3GWYimxN7YMk8',
+        amount: amountInCent / 25,
         prefill: {
-          email: "void@razorpay.com",
-          contact: "9191919191",
-          name: "Tai Nguyen",
+          email: 'void@razorpay.com',
+          contact: '9191919191',
+          name: 'Tai Nguyen',
         },
-        theme: { color: "#F37254" },
+        theme: {color: '#F37254'},
       };
 
       const data = await RazorpayCheckout.open(options);
@@ -119,23 +127,22 @@ const ConfirmationScreen = () => {
       const orderData = {
         userId: userId,
         cartItems: cart,
-        totalPrice: amountInCent*10,
+        totalPrice: amountInCent * 10,
         shippingAddress: selectedAddress,
-        paymentMethod: "card",
+        paymentMethod: 'card',
       };
 
       const response = await axios.post(
         'http://192.168.1.4:8000/orders',
-        orderData
+        orderData,
       );
       if (response.status === 200) {
-        navigation.navigate("Order");
+        navigation.navigate('Order');
         dispatch(cleanCart());
-        console.log("order created successfully", response.data);
+        console.log('order created successfully', response.data);
       } else {
-        console.log("error creating order", response.data);
+        console.log('error creating order', response.data);
       }
-      
     } catch (error) {
       //console.log("error", error);
     }
@@ -176,7 +183,13 @@ const ConfirmationScreen = () => {
                   </Text>
                 )}
               </View>
-              <Text style={{textAlign: 'center', marginTop: 8, color: 'black', marginTop: 10}}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  marginTop: 8,
+                  color: 'black',
+                  marginTop: 10,
+                }}>
                 {step.title}
               </Text>
             </View>
@@ -187,136 +200,78 @@ const ConfirmationScreen = () => {
       {currentStep == 0 && (
         <View style={{marginHorizontal: 20}}>
           <Text style={{fontSize: 16, fontWeight: 'bold', color: 'black'}}>
-            Chọn địa chỉ giao hàng
+            Nhập Mail gửi đơn hàng
           </Text>
 
           <Pressable>
-            {addresses?.map((item, index) => (
-              <Pressable
-                style={{
-                  borderWidth: 1,
-                  borderColor: '#D0D0D0',
-                  padding: 10,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 5,
-                  paddingBottom: 17,
-                  marginVertical: 7,
-                  borderRadius: 6,
-                }}>
-                {selectedAddress && selectedAddress._id === item?._id ? (
-                  <DocCircCleO name="dot-circle-o" size={20} color="#008397" />
-                ) : (
-                  <Icon
-                    onPress={() => setSelectedAdress(item)}
-                    name="circle"
-                    size={20}
-                    color="gray"
-                  />
-                )}
-
-                <View style={{marginLeft: 6}}>
+            <Pressable
+              style={{
+                borderWidth: 1,
+                borderColor: '#D0D0D0',
+                
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 5,
+                paddingBottom: 17,
+                marginVertical: 7,
+                borderRadius: 6,
+              }}>
+              <View style={{marginLeft: 6}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 10,
+                    marginTop: -15,
+                  }}>
                   <View
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
-                      gap: 3,
+                      gap: 5,
+                      backgroundColor: '#D0D0D0',
+                      paddingVertical: 5,
+                      borderRadius: 5,
+                      marginTop: 30,
                     }}>
-                    <Text
+                    <MaterialCommunityIcons
+                      style={{marginLeft: 8}}
+                      name="email"
+                      size={24}
+                      color="gray"
+                    />
+                    <TextInput
+                      value={email}
+                      onChangeText={text => setEmail(text)}
                       style={{
-                        fontSize: 15,
-                        fontWeight: 'bold',
-                        color: 'black',
-                      }}>
-                      {item?.name}
-                    </Text>
-                    <Icon name="location-pin" size={24} color="red" />
-                  </View>
-
-                  <Text style={{fontSize: 15, color: '#181818'}}>
-                    {item?.houseNo}, {item?.landmark}
-                  </Text>
-
-                  <Text style={{fontSize: 15, color: 'black'}}>
-                    {item?.street}
-                  </Text>
-
-                  <Text style={{fontSize: 15, color: '#181818'}}>
-                    India, Bangalore
-                  </Text>
-
-                  <Text style={{fontSize: 15, color: '#181818'}}>
-                    phone No : {item?.mobileNo}
-                  </Text>
-                  <Text style={{fontSize: 15, color: '#181818'}}>
-                    pin code : {item?.postalCode}
-                  </Text>
-
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: 10,
-                      marginTop: 7,
-                    }}>
-                    <Pressable
-                      style={{
-                        backgroundColor: '#F5F5F5',
-                        paddingHorizontal: 10,
-                        paddingVertical: 6,
-                        borderRadius: 5,
-                        borderWidth: 0.9,
-                        borderColor: '#D0D0D0',
-                      }}>
-                      <Text style={{color: 'black'}}>Sửa</Text>
-                    </Pressable>
-
-                    <Pressable
-                      style={{
-                        backgroundColor: '#F5F5F5',
-                        paddingHorizontal: 10,
-                        paddingVertical: 6,
-                        borderRadius: 5,
-                        borderWidth: 0.9,
-                        borderColor: '#D0D0D0',
-                      }}>
-                      <Text style={{color: 'black'}}>Xoá</Text>
-                    </Pressable>
-
-                    <Pressable
-                      style={{
-                        backgroundColor: '#F5F5F5',
-                        paddingHorizontal: 10,
-                        paddingVertical: 6,
-                        borderRadius: 5,
-                        borderWidth: 0.9,
-                        borderColor: '#D0D0D0',
-                      }}>
-                      <Text style={{color: 'black'}}>Đặt làm mặc định</Text>
-                    </Pressable>
-                  </View>
-
-                  <View>
-                    {selectedAddress && selectedAddress._id === item?._id && (
-                      <Pressable
-                        onPress={() => setCurrentStep(1)}
-                        style={{
-                          backgroundColor: '#008397',
-                          padding: 10,
-                          borderRadius: 20,
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          marginTop: 10,
-                        }}>
-                        <Text style={{textAlign: 'center', color: 'black'}}>
-                          Sửa dụng địa chỉ này
-                        </Text>
-                      </Pressable>
-                    )}
+                        color: 'gray',
+                        marginVertical: 10,
+                        width: 300,
+                        fontSize: email ? 16 : 16,
+                      }}
+                      placeholder="Nhập email"
+                    />
                   </View>
                 </View>
-              </Pressable>
-            ))}
+
+                <View>
+                  <Pressable
+                    onPress={() => setCurrentStep(1)}
+                    style={{
+                      backgroundColor: '#008397',
+                      padding: 10,
+                      borderRadius: 20,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      marginTop: 10,
+                    }}>
+                    <Text style={{textAlign: 'center', color: 'black'}}>
+                      Sửa dụng Mail này
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+            </Pressable>
           </Pressable>
         </View>
       )}
@@ -324,7 +279,7 @@ const ConfirmationScreen = () => {
       {currentStep == 1 && (
         <View style={{marginHorizontal: 20}}>
           <Text style={{fontSize: 20, fontWeight: 'bold', color: 'black'}}>
-            Chọn phương thức vận chuyển
+            Chọn thời gian đến thăm
           </Text>
 
           <View
@@ -437,7 +392,9 @@ const ConfirmationScreen = () => {
               />
             )}
 
-            <Text style={{color: 'black'}}>Napas / Thêm thẻ thanh toán quốc tế Visa</Text>
+            <Text style={{color: 'black'}}>
+              Napas / Thêm thẻ thanh toán quốc tế Visa
+            </Text>
           </View>
           <Pressable
             onPress={() => setCurrentStep(3)}
@@ -537,9 +494,7 @@ const ConfirmationScreen = () => {
                 justifyContent: 'space-between',
                 marginTop: 8,
               }}>
-              <Text style={{fontSize: 20, fontWeight: 'bold'}}>
-                Thành tiền
-              </Text>
+              <Text style={{fontSize: 20, fontWeight: 'bold'}}>Thành tiền</Text>
 
               <Text
                 style={{color: '#C60C30', fontSize: 17, fontWeight: 'bold'}}>
@@ -579,12 +534,10 @@ const ConfirmationScreen = () => {
               alignItems: 'center',
               marginTop: 20,
             }}>
-            
             <Text style={{color: 'white'}}>Đặt hàng</Text>
           </Pressable>
         </View>
       )}
-      
     </ScrollView>
   );
 };
