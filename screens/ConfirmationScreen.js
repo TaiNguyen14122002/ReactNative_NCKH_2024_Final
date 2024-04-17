@@ -48,6 +48,18 @@ const ConfirmationScreen = () => {
       console.log('error', error);
     }
   };
+  // const fetchAddresses = async () => {
+  //   try {
+  //     const response = await axios.get(
+  //       `http://192.168.1.4:8000/mail/${userId}`,
+  //     );
+  //     const {mail} = response.data;
+
+  //     setAddresses(mail);
+  //   } catch (error) {
+  //     console.log('error', error);
+  //   }
+  // };
   
   const dispatch = useDispatch();
   const [selectedAddress, setSelectedAdress] = useState('');
@@ -60,7 +72,8 @@ const ConfirmationScreen = () => {
         
         userId: userId,
         totalPrice: amountInCent*10,
-        shippingAddress: selectedAddress,
+        // shippingAddress: selectedAddress,
+        Mail: selectedAddress,
         paymentMethod: selectedOption,
         cartItems: cart,
       };

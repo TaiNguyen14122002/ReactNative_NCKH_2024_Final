@@ -60,7 +60,15 @@ const orderSchema = new mongoose.Schema({
       required: true,
     },
   },
+  // Mail:{
+  //   type: String,
+  //   required: true,
+  // },
   paymentMethod: {
+    type: String,
+    required: true,
+  },
+  DateTime:{
     type: String,
     required: true,
   },

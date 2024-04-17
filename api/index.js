@@ -24,7 +24,7 @@ app.listen(port, () => {
 });
 
 mongoose
-  .connect("mongodb+srv://2024801030129:Tai@cluster0.tcbkvnv.mongodb.net/", {
+  .connect("mongodb+srv://TaiNguyen:Tai@cluster0.gm8lsik.mongodb.net/", {
     // useNewUrlParser: true,
     // useUnifiedTopology: true,
   })
@@ -332,6 +332,21 @@ app.get("/addresses/:userId", async (req, res) => {
     res.status(500).json({ message: "Error retrieveing the addresses" });
   }
 });
+// app.get("/mail/:userId", async (req, res) => {
+//   try {
+//     const userId = req.params.userId;
+
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     const mail = user.email;
+//     res.status(200).json({ mail });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error retrieveing the mail" });
+//   }
+// });
 
 //endpoint to store all the orders
 app.post("/orders", async (req, res) => {
