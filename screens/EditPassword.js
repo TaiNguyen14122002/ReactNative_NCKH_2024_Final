@@ -9,35 +9,77 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect,useContext, useState} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {UserType} from '../UserContext';
 
 const LoginScreen = () => {
   
   const [password, setPassword] = useState('');
   const [ComfirmPassword, setComfirmPassword] = useState('');
   const navigation = useNavigation();
+  const {userId, setUserId} = useContext(UserType);
+  
+
+  const [user, setUser] = useState();
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await axios.get(
+          `http://192.168.1.4:8000/profile/${userId}`,
+        );
+        const {user} = response.data;
+        setUser(user);
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+  
+
 
   
   const handleEdit = () => {
-    const user = {
+    if (!password || !ComfirmPassword) {
+      Alert.alert('Vui lòng nhập đầy đủ thông tin');
+      return;
+    }
+    
+    if (password !== ComfirmPassword) {
+      Alert.alert('Mật khẩu không khớp');
+      return;
+    }
+  
+    const userData = {
+      Email: user?.Email,
       password: password,
-      ComfirmPassword: ComfirmPassword,
+      confirmPassword: ComfirmPassword, // Change to match backend field name
     };
+  
     axios
-      .post('http://192.168.1.4:8000/changepassword', user)
+      .post('http://192.168.1.4:8000/changepassword', userData)
       .then(response => {
         console.log("TTT")
         console.log(response.data.message); // Output success message from server
+        Alert.alert(response.data.message);
+        navigation.navigate('Main');
+
       })
       .catch(error => {
         console.error('There was a problem with your Axios request:', error);
+        if (error.response && error.response.data) {
+          console.error('Server error message:', error.response.data);
+        }
+        Alert.alert('Đã xảy ra lỗi khi đổi mật khẩu');
       });
   };
+  
   return (
     <SafeAreaView
       style={{flex: 1, backgroundColor: 'white', alignItems: 'center'}}>

@@ -33,19 +33,16 @@ const YourOrder = () => {
   };
   const [oorders, setorders] = useState('');
   const dateTimeParts = oorders.split('T');
-            const datePart = dateTimeParts[0];
-            
-            // Tách thành mảng ngày, tháng, năm
-            const [year, month, day] = datePart.split('-');
-          
-            // Tạo chuỗi ngày tháng năm mới
-            const formattedDate = `${day}-${month}-${year}`;
+  const datePart = dateTimeParts[0];
 
+  // Tách thành mảng ngày, tháng, năm
+  const [year, month, day] = datePart.split('-');
 
-  
+  // Tạo chuỗi ngày tháng năm mới
+  const formattedDate = `${day}-${month}-${year}`;
 
-
-  const LinkImage = 'https://blogcdn.muaban.net/wp-content/uploads/2022/07/23071106/bao-tang-my-thuat-thanh-pho-ho-chi-minh-6.jpg';
+  const LinkImage =
+    'https://blogcdn.muaban.net/wp-content/uploads/2022/07/23071106/bao-tang-my-thuat-thanh-pho-ho-chi-minh-6.jpg';
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: '',
@@ -154,9 +151,27 @@ const YourOrder = () => {
                     style={{width: 100, height: 100, resizeMode: 'contain'}}
                   />
                   <View>
-                  <View>
+                    <View>
                       <Text style={{width: 100, fontWeight: 'bold'}}>
                         Mã vé:
+                      </Text>
+                      <Text
+                        style={{width: 230}}
+                        numberOfLines={1}
+                        ellipsizeMode="tail">
+                        {cartItems.Ticker_Code}
+                      </Text>
+                      {/* <QRCode value={order._id} size={100} /> Sử dụng ID đặt hàng làm giá trị của mã QR */}
+                    </View>
+                    <View>
+                      <Text style={{width: 100, fontWeight: 'bold'}}>
+                        Thời gian đến thăm:
+                      </Text>
+                      <Text
+                        style={{width: 230}}
+                        numberOfLines={1}
+                        ellipsizeMode="tail">
+                        {order.DateTime}
                       </Text>
                       {/* <QRCode value={order._id} size={100} /> Sử dụng ID đặt hàng làm giá trị của mã QR */}
                     </View>
@@ -182,7 +197,7 @@ const YourOrder = () => {
                         {cartItems.quantity}
                       </Text>
                     </View>
-                    
+
                     <View style={{flexDirection: 'row'}}>
                       <Text style={{width: 80, fontWeight: 'bold'}}>
                         Thành tiền:
@@ -195,7 +210,9 @@ const YourOrder = () => {
                       </Text>
                     </View>
                     <View style={{flexDirection: 'row'}}>
-                      <Text style={{width: 80, fontWeight: 'bold'}}>Hình thức thanh toán:</Text>
+                      <Text style={{width: 80, fontWeight: 'bold'}}>
+                        Hình thức thanh toán:
+                      </Text>
                       <Text
                         style={{width: 150}}
                         numberOfLines={1}
@@ -204,21 +221,20 @@ const YourOrder = () => {
                       </Text>
                     </View>
                     <View style={{flexDirection: 'row'}}>
-                      <Text style={{width: 80, fontWeight: 'bold'}}>Thời gian đặt vé:</Text>
+                      <Text style={{width: 80, fontWeight: 'bold'}}>
+                        Thời gian đặt vé:
+                      </Text>
                       <Text
                         style={{width: 150}}
                         numberOfLines={1}
                         ellipsizeMode="tail">
-                          {moment(order.createdAt).format('DD-MM-YYYY')}
-                        
+                        {moment(order.createdAt).format('DD-MM-YYYY')}
                       </Text>
                     </View>
                     <Pressable
                       style={{marginHorizontal: 10, marginVertical: 15}}>
                       <Pressable
-                        onPress={() =>
-                          addItemToCart(cartItems)
-                        }
+                        onPress={() => addItemToCart(cartItems)}
                         style={{
                           backgroundColor: '#1d1d1f',
                           padding: 10,

@@ -5,6 +5,7 @@ import {
   ScrollView,
   Pressable,
   TextInput,
+  TouchableOpacity,
 } from 'react-native';
 import React, {useContext, useEffect, useState} from 'react';
 import {UserType} from '../UserContext';
@@ -19,6 +20,8 @@ import {equestBillingAgreement} from 'react-native-paypal';
 import {requestOneTimePayment} from 'react-native-paypal';
 import DocCircCleO from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {Calendar} from 'react-native-calendars';
+import {Button} from 'react-native';
 
 const ConfirmationScreen = () => {
   const steps = [
@@ -26,12 +29,23 @@ const ConfirmationScreen = () => {
     {title: 'Chọn thời gian', content: 'DataTime'},
     {title: 'Thanh toán', content: 'Payment'},
   ];
+  const [selectedDate, setSelectedDate] = useState('');
+  const [showCalendar, setShowCalendar] = useState(false);
+  const handleDayPress = day => {
+    setSelectedDate(day.dateString);
+    setShowCalendar(false);
+  };
   const navigation = useNavigation();
   const [currentStep, setCurrentStep] = useState(0);
   const [addresses, setAddresses] = useState([]);
   const [email, setEmail] = useState('');
   const {userId, setUserId} = useContext(UserType);
   const cart = useSelector(state => state.cart.cart);
+  const handleSave = () => {
+    // Handle saving the selected date
+    console.log('Selected date:', selectedDate);
+    setCurrentStep(2)
+  };
 
   const total = cart
     ?.map(item => item.Price * item.quantity)
@@ -75,6 +89,10 @@ const ConfirmationScreen = () => {
   const [selectedAddress, setSelectedAdress] = useState('');
   const [option, setOption] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
+  const Mail = () => {
+    console.log(email);
+    setCurrentStep(1)
+  };
   console.log(cart);
   const handlePlaceOrder = async () => {
     try {
@@ -82,7 +100,8 @@ const ConfirmationScreen = () => {
         userId: userId,
         totalPrice: amountInCent * 10,
         // shippingAddress: selectedAddress,
-        Mail: selectedAddress,
+        Mail: email,
+        DateTime: selectedDate,
         paymentMethod: selectedOption,
         cartItems: cart,
       };
@@ -128,7 +147,9 @@ const ConfirmationScreen = () => {
         userId: userId,
         cartItems: cart,
         totalPrice: amountInCent * 10,
-        shippingAddress: selectedAddress,
+        // shippingAddress: selectedAddress,
+        Mail: email,
+        DateTime: selectedDate,
         paymentMethod: 'card',
       };
 
@@ -208,7 +229,7 @@ const ConfirmationScreen = () => {
               style={{
                 borderWidth: 1,
                 borderColor: '#D0D0D0',
-                
+
                 flexDirection: 'row',
                 alignItems: 'center',
                 gap: 5,
@@ -256,7 +277,8 @@ const ConfirmationScreen = () => {
 
                 <View>
                   <Pressable
-                    onPress={() => setCurrentStep(1)}
+                    // onPress={() => setCurrentStep(1)}
+                    onPress={Mail}
                     style={{
                       backgroundColor: '#008397',
                       padding: 10,
@@ -282,38 +304,33 @@ const ConfirmationScreen = () => {
             Chọn thời gian đến thăm
           </Text>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              backgroundColor: 'white',
-              padding: 8,
-              gap: 7,
-              borderColor: '#D0D0D0',
-              borderWidth: 1,
-              marginTop: 10,
-            }}>
-            {option ? (
-              <DocCircCleO name="dot-circle-o" size={20} color="#008397" />
-            ) : (
-              <Icon
-                onPress={() => setOption(!option)}
-                name="circle"
-                size={20}
-                color="gray"
-              />
+          <View style={{}}>
+            <TouchableOpacity
+              style={styles.input}
+              onPress={() => setShowCalendar(true)}>
+              <Text
+                style={{
+                  padding: 10,
+                  borderColor: '#D0D0D0',
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  width: 100,
+                  marginTop: 10,
+                }}>
+                {selectedDate || 'Enter date (DD/MM/YYYY)'}
+              </Text>
+            </TouchableOpacity>
+            {showCalendar && (
+              <View style={styles.calendarContainer}>
+                <Calendar onDayPress={handleDayPress} />
+                <Button title="Close" onPress={() => setShowCalendar(false)} />
+              </View>
             )}
-
-            <Text style={{flex: 1, color: 'black'}}>
-              <Text style={{color: 'green', fontWeight: '500'}}>
-                Tomorrow by 10pm
-              </Text>{' '}
-              - Đã bao gồm phí VAT
-            </Text>
+            
           </View>
 
           <Pressable
-            onPress={() => setCurrentStep(2)}
+            onPress={handleSave}
             style={{
               backgroundColor: '#1d1d1f',
               padding: 10,
@@ -322,7 +339,7 @@ const ConfirmationScreen = () => {
               alignItems: 'center',
               marginTop: 15,
             }}>
-            <Text>Continue</Text>
+            <Text style={{color: 'white'}}>Tiếp tục</Text>
           </Pressable>
         </View>
       )}

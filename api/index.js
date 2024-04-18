@@ -44,11 +44,11 @@ const Admin = require("./models/admin");
 const bcrypt = require('bcryptjs');
 
 
-let loggedInUserEmail = "";
+
 
 
 app.post('/changepassword', async (req, res) => {
-  const {password, confirmPassword } = req.body;
+  const { Email, password, confirmPassword } = req.body;
 
   try {
     // Kiểm tra xác nhận mật khẩu
@@ -57,15 +57,11 @@ app.post('/changepassword', async (req, res) => {
     }
 
     // Tìm người dùng theo email
-    const user = await User.findOne({ loggedInUserEmail });
-    console.log(loggedInUserEmail)
+    const user = await User.findOne({ Email });
 
     if (!user) {
       return res.status(404).json({ error: 'Người dùng không tồn tại' });
     }
-
-    // Hash mật khẩu mới
-    //const hashedPassword = await bcrypt.hash(password, 10);
 
     // Cập nhật mật khẩu mới cho người dùng
     user.password = password;
@@ -351,8 +347,10 @@ app.get("/addresses/:userId", async (req, res) => {
 //endpoint to store all the orders
 app.post("/orders", async (req, res) => {
   try {
-    const { OrderID, userId, cartItems, totalPrice, shippingAddress, paymentMethod } =
+    const { OrderID, userId, cartItems, totalPrice, Mail, DateTime, paymentMethod } =
       req.body;
+
+    const newCode = Math.random().toString(36).slice(-8);
 
     const user = await User.findById(userId);
     if (!user) {
@@ -365,6 +363,7 @@ app.post("/orders", async (req, res) => {
       quantity: item.quantity,
       Price: item.Price,
       Note: item?.Note,
+      Ticker_Code: newCode,
     }));
 
     //create a new Order
@@ -372,13 +371,40 @@ app.post("/orders", async (req, res) => {
       user: userId,
       cartItems: products,
       totalPrice: totalPrice,
-      shippingAddress: shippingAddress,
+      // shippingAddress: shippingAddress,
+      Mail:Mail,
+      DateTime:DateTime,
       paymentMethod: paymentMethod,
     });
 
     await order.save();
 
     res.status(200).json({ message: "Order created successfully!" });
+
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: 'Tainguyenlq.0123@gmail.com',
+        pass: 'fucc zyds hruu qvta',
+      },
+    });
+
+    const mailOptions = {
+      from: 'Tainguyenlq.0123@gmail.com',
+      to: Mail,
+      subject: 'Book a museum visit',
+      text: `Your booking code is: ${newCode} Visit the museum at: ${DateTime}`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).json({ error: 'Failed to send email' });
+      } else {
+        console.log('Email sent: ' + info.response);
+        return res.status(200).json({ message: 'booking code sent to your email' });
+      }
+    });
   } catch (error) {
     console.log("error creating orders", error);
     res.status(500).json({ message: "Error creating orders" });

@@ -228,7 +228,7 @@ const handleEdit = () =>{
         </Pressable>
       </View>
 
-      <View
+      {/* <View
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -265,7 +265,7 @@ const handleEdit = () =>{
           }}>
           <Text style={{textAlign: 'center'}}>Thêm vé</Text>
         </Pressable>
-      </View>
+      </View> */}
       
 
       <View style={{marginTop: 30, padding: 10}}>

@@ -3,8 +3,8 @@ import React from 'react'
 
 const HandleMap = () => {
   return (
-    <View>
-      <Text>HandleMap</Text>
+    <View style={{padding: 10}}>
+      <Text >Chức năng chỉ đường đang được nâng cấp trong hướng phát triển</Text>
     </View>
   )
 }
